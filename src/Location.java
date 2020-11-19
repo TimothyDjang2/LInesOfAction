@@ -25,4 +25,13 @@ public class Location {
         this.y += y;
     }
 
+    @Override
+    public boolean equals(Object l) {
+        if (l == null) return false;
+        if (l.getClass() != this.getClass()) return false;
+        Location loc = (Location)l;
+        if (loc.getX() == this.x && loc.getY() == this.y) return true;
+        return false;
+    }
+
 }

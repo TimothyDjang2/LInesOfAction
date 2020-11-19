@@ -6,6 +6,7 @@ import javax.swing.ImageIcon;
 import java.awt.image.BufferedImage;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 
 public class Window {
@@ -17,7 +18,9 @@ public class Window {
     private BufferedImage display, buffer;
     private Graphics2D dispG, bufG;
 
-    private static final Color backgroundColor = Color.decode("#aaaaff");
+    private static final Color BACKGROUND_COLOR = Color.decode("#aaaaff");
+    private static final Color WHITE_PIECES = Color.decode("#aaaaaa");
+    private static final Color BLACK_PIECES = Color.decode("#222222");
 
     private static final int WIDTH = 800, HEIGHT = 800;
     private static final int MARGIN_X = 80, MARGIN_Y = 80;
@@ -36,7 +39,7 @@ public class Window {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setBackground(backgroundColor);
+        frame.setBackground(BACKGROUND_COLOR);
 
         display = new BufferedImage(WIDTH, HEIGHT + 20, BufferedImage.TYPE_INT_ARGB);
         buffer = new BufferedImage(WIDTH, HEIGHT + 20, BufferedImage.TYPE_INT_ARGB);
@@ -57,14 +60,28 @@ public class Window {
 
     public void render() {
         clear();
-        drawBoard();
-        drawPieces();
+        if (Game.getInstance().getGameState() == 0) {
+            drawBoard();
+            drawSelectedSquare();
+            drawPieces();
+        }
+        else if (Game.getInstance().getGameState() == 1) { drawTitle("White Wins", Color.WHITE); }
+        else if (Game.getInstance().getGameState() == 2) { drawTitle("Black Wins", BLACK_PIECES); }
+        else if (Game.getInstance().getGameState() == 3) { drawTitle("Tie", BLACK_PIECES); }
         blit();
     }
 
     private void clear() {
-        bufG.setColor(backgroundColor);
+        bufG.setColor(BACKGROUND_COLOR);
         bufG.fillRect(0, 0, WIDTH, HEIGHT);
+    }
+
+    private void drawTitle(String title, Color color) {
+        bufG.setColor(color);
+        bufG.setFont(new Font("Monospace", Font.BOLD, 100));
+        int offset = (title.length() * 28);
+
+        bufG.drawString(title, (WIDTH / 2) - offset, (HEIGHT / 2) + 28);
     }
 
     private void drawBoard() {
@@ -94,21 +111,35 @@ public class Window {
 
     }
 
+    private void drawSelectedSquare() {
+        Location loc = Game.getInstance().getSelectedLocation();
+        if (loc != null) {
+            int x = loc.getX();
+            int y = loc.getY();
+            bufG.setColor(new Color(255, 127, 127));
+            bufG.fillRect(MARGIN_X + (x * SQUARE_SIZE), MARGIN_Y + (y * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+        }
+    }
+
     /**
      * Draws all the grarbage that Game gives it, (tokens and valid move squares.)
      */
     private void drawPieces() {
-        Piece[] pieces = Game.getInstance().getPieces();
-        for (Piece p : pieces) {
-            if (p.getType() == 0) { 
-                bufG.setColor(Color.decode("#222222")); 
-                bufG.fillOval(MARGIN_X + (p.getX() * SQUARE_SIZE) + (PIECE_MARGIN), MARGIN_Y + (p.getY() * SQUARE_SIZE) + (PIECE_MARGIN), PIECE_SIZE, PIECE_SIZE);
-            } else if (p.getType() == 1) { 
-                bufG.setColor(Color.decode("#aaaaaa")); 
-                bufG.fillOval(MARGIN_X + (p.getX() * SQUARE_SIZE) + (PIECE_MARGIN), MARGIN_Y + (p.getY() * SQUARE_SIZE) + (PIECE_MARGIN), PIECE_SIZE, PIECE_SIZE);
-            } else if (p.getType() == 2) { 
-                bufG.setColor(new Color(0, 255, 0, 127));
-                bufG.fillRect(MARGIN_X + (p.getX() * SQUARE_SIZE), MARGIN_Y + (p.getY() * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+        int[][] pieces = Game.getInstance().getPieces();
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (pieces[i][j] - 4 > -1) { 
+                    bufG.setColor(new Color(127, 255, 127, 255));
+                    bufG.fillRect(MARGIN_X + (i * SQUARE_SIZE), MARGIN_Y + (j * SQUARE_SIZE), SQUARE_SIZE, SQUARE_SIZE);
+                    pieces[i][j] -= 4;
+                } if (pieces[i][j] - 2 > -1) { 
+                    bufG.setColor(BLACK_PIECES); 
+                    bufG.fillOval(MARGIN_X + (i * SQUARE_SIZE) + (PIECE_MARGIN), MARGIN_Y + (j * SQUARE_SIZE) + (PIECE_MARGIN), PIECE_SIZE, PIECE_SIZE);
+                    pieces[i][j] -= 2;
+                } if (pieces[i][j] == 1) { 
+                    bufG.setColor(WHITE_PIECES); 
+                    bufG.fillOval(MARGIN_X + (i * SQUARE_SIZE) + (PIECE_MARGIN), MARGIN_Y + (j * SQUARE_SIZE) + (PIECE_MARGIN), PIECE_SIZE, PIECE_SIZE);
+                }
             }
         }
     }
