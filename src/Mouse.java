@@ -33,7 +33,7 @@ public class Mouse implements MouseListener {
 
     /**
      * This class processes input and sends it to the engine.
-     * Has a getInstance method since I only need one of them.
+     * It has a getInstance method since I only need one of them.
      * @return
      */
     public static Mouse getInstance() {

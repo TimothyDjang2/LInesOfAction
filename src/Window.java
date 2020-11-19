@@ -1,6 +1,5 @@
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.SwingConstants;
 import javax.swing.ImageIcon;
 
 import java.awt.image.BufferedImage;
@@ -29,7 +28,7 @@ public class Window {
     private static final int PIECE_SIZE = (int)(SQUARE_SIZE - ( 2 * PIECE_MARGIN));
 
     /**
-     * Handles all the rendering.
+     * Handles all the rendering. This constructor just sets up the window.
      */
     private Window() {
 
@@ -58,6 +57,9 @@ public class Window {
         render();
     }
 
+    /**
+     * Do all the cool rendering.
+     */
     public void render() {
         clear();
         if (Game.getInstance().getGameState() == 0) {
@@ -71,11 +73,19 @@ public class Window {
         blit();
     }
 
+    /**
+     * Reset canvas for a new frame.
+     */
     private void clear() {
         bufG.setColor(BACKGROUND_COLOR);
         bufG.fillRect(0, 0, WIDTH, HEIGHT);
     }
 
+    /**
+     * Draws text in the "middle" of the screen.
+     * @param title - Text to draw
+     * @param color - Color of text
+     */
     private void drawTitle(String title, Color color) {
         bufG.setColor(color);
         bufG.setFont(new Font("Monospace", Font.BOLD, 100));
@@ -84,6 +94,9 @@ public class Window {
         bufG.drawString(title, (WIDTH / 2) - offset, (HEIGHT / 2) + 28);
     }
 
+    /**
+     * Draws a pretty checkerboard
+     */
     private void drawBoard() {
         
         boolean color = false;
@@ -111,6 +124,9 @@ public class Window {
 
     }
 
+    /**
+     * Draw the singular red square that shows you which piece is selected.
+     */
     private void drawSelectedSquare() {
         Location loc = Game.getInstance().getSelectedLocation();
         if (loc != null) {

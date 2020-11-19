@@ -1,13 +1,26 @@
-import java.util.ArrayList;
+/**
+ * Lines Of Action - Made by Timothy Djang for CS-172, Nov 19, 2020
+ * 
+ * Emeline was technically my partner but we both made separate programs again, since I don't like using stdLib.
+ * 
+ * Features:
+ * - The most disgusting code I've ever written.
+ * - Stress.
+ * - Singletons that make life difficult to unit test.
+ * - No rhyme or reason when it comes to which things are made constants and which are hard-coded.
+ */
 
 public class Game {
     
     private int[][] board; //0 for empty, 1 for white, 2 for black, 4 for movement.
-    private static Game instance;
     private boolean turn = false; //Who's turn it is to move, false for black, true for white.
     private Location selectedPiece;
     private int dfsTotal; //Data storage for search function. Needs to be a class variable for reasons.
     private int gameState; //Stores the winstate of the game so it doesn't have to be recalculated every time it's queried.
+
+    public static void main(String[] args) {
+        Window.getInstance();
+    }
 
     /**
      * Handles all the pieces, turns, etc.
@@ -263,6 +276,8 @@ public class Game {
         }
     }
 
+    
+    private static Game instance;
     /**
      * Returns the static instance of the Game class.
      * Exists so I only ever have one Game object in existence.
