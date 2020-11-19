@@ -25,6 +25,9 @@ public class Window {
     private static final int PIECE_MARGIN = (int)(.1 * SQUARE_SIZE);
     private static final int PIECE_SIZE = (int)(SQUARE_SIZE - ( 2 * PIECE_MARGIN));
 
+    /**
+     * Handles all the rendering.
+     */
     private Window() {
 
         frame = new JFrame("Lines of Action");

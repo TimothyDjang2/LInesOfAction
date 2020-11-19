@@ -32,6 +32,11 @@ public class Mouse implements MouseListener {
     public boolean getMouseDown() { return mouseDown; }
     
     private static Mouse instance;
+
+    /**
+     * Processes input and sends it to the engine.
+     * @return
+     */
     public static Mouse getInstance() {
         if (instance == null) instance = new Mouse();
         return instance;

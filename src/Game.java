@@ -7,11 +7,19 @@ public class Game {
     private boolean turn = false; //Who's turn it is to move, false for black, true for white.
     private Piece selectedPiece;
 
+    /**
+     * Handles all the pieces, turns, etc.
+     */
     private Game() {
         pieces = new ArrayList<Piece>();
-        for (int i = 1; i < 7; i++) { pieces.add(new Piece(i, 0, 1)); }
-        for (int i = 1; i < 7; i++) { pieces.add(new Piece(0, i, 0)); }
-        pieces.add(0, new Piece(1, 0, 2));
+        for (int i = 1; i < 7; i++) { 
+            pieces.add(new Piece(i, 0, 1)); 
+            pieces.add(new Piece(i, 7, 1)); 
+        }
+        for (int i = 1; i < 7; i++) { 
+            pieces.add(new Piece(0, i, 0)); 
+            pieces.add(new Piece(7, i, 0)); 
+        }
     }
 
     /**
@@ -54,19 +62,29 @@ public class Game {
      * @param piece - Piece to find valid moves for.
      */
     public void getValidMoves(Piece piece) {
-        int count = 0;
-        for (Piece p : pieces) {
-            if (piece.getX() == p.getX()) { count++; }
-        }
-        if (piece.getY() - count > -1) { pieces.add(0, new Piece(piece.getX(), piece.getY() - count, 2)); }
-        if (piece.getY() + count < 8) { pieces.add(0, new Piece(piece.getX(), piece.getY() + count, 2)); }
+        ArrayList<Piece> 
+            row = new ArrayList<Piece>(), 
+            col = new ArrayList<Piece>(), 
+            upDiagonal = new ArrayList<Piece>(), // slope of 1
+            downDiagonal = new ArrayList<Piece>(); // slope of -1
 
-        count = 0;
-        for (Piece p : pieces) {
-            if (piece.getY() == p.getY()) { count++; }
+        for (Piece test : pieces) {
+            if (piece.getX() == test.getX()) { col.add(test); }
+            if (piece.getY() == test.getY()) { row.add(test); }
+            if (piece.getX() - test.getX() == piece.getY() - test.getY()) { upDiagonal.add(test); }
+            if (piece.getX() - test.getX() == piece.getY() + test.getY()) { downDiagonal.add(test); }
+            if (piece.getX() + test.getX() == piece.getY() - test.getY()) { downDiagonal.add(test); }
         }
-        if (piece.getX() - count > -1) { pieces.add(0, new Piece(piece.getX() - count, piece.getY(), 2)); }
-        if (piece.getX() + count < 8) { pieces.add(0, new Piece(piece.getX() + count, piece.getY(), 2)); }
+
+        if (isValidSquare(piece.getX(), piece.getY() - col.size())) { pieces.add(0, new Piece(piece.getX(), piece.getY() - col.size(), 2)); }
+        if (isValidSquare(piece.getX(), piece.getY() + col.size())) { pieces.add(0, new Piece(piece.getX(), piece.getY() + col.size(), 2)); }
+        if (isValidSquare(piece.getX() - row.size(), piece.getY())) { pieces.add(0, new Piece(piece.getX() - row.size(), piece.getY(), 2)); }
+        if (isValidSquare(piece.getX() + row.size(), piece.getY())) { pieces.add(0, new Piece(piece.getX() + row.size(), piece.getY(), 2)); }
+
+        if (isValidSquare(piece.getX() + upDiagonal.size(), piece.getY() + upDiagonal.size())) { pieces.add(0, new Piece(piece.getX() + upDiagonal.size(), piece.getY() + upDiagonal.size(), 2)); }
+        if (isValidSquare(piece.getX() - upDiagonal.size(), piece.getY() - upDiagonal.size())) { pieces.add(0, new Piece(piece.getX() - upDiagonal.size(), piece.getY() - upDiagonal.size(), 2)); }
+        if (isValidSquare(piece.getX() + downDiagonal.size(), piece.getY() - downDiagonal.size())) { pieces.add(0, new Piece(piece.getX() + downDiagonal.size(), piece.getY() - downDiagonal.size(), 2)); }
+        if (isValidSquare(piece.getX() - downDiagonal.size(), piece.getY() + downDiagonal.size())) { pieces.add(0, new Piece(piece.getX() - downDiagonal.size(), piece.getY() + downDiagonal.size(), 2)); }
     }
 
     private Piece pieceAt(int x, int y) {
@@ -79,6 +97,14 @@ public class Game {
     }
 
     /**
+     * See if a square is within the limits of the board.
+     */
+    private boolean isValidSquare(int x, int y) {
+        if (x > -1 && x < 8 && y > -1 && y < 8) return true;
+        return false;
+    }
+
+    /**
      * Clears all green square "pieces" from the piece list.
      * Used when a move is made, or when a different token is selected.
      */
@@ -87,7 +113,7 @@ public class Game {
             if (pieces.get(i).getType() == 2) {
                 pieces.remove(i);
                 i--;
-            }
+            } else { return; }
         }
     }
 
